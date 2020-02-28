@@ -1,0 +1,70 @@
+---
+title: "Craps"
+author: "David Kane"
+date: "2/25/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+```
+
+
+## Simulating a Simple Game of Craps
+
+We will simulate a honest (albeit simplified) game of Craps. If no one is cheating, we would expect the actual results to be "consistent" with our simulation. If the actual results are "surprising," then our model has failed to capture some aspect of the world. Specifically, we assumed an honest game in making the model. Is the data (Ishan beat John Mark 4 to 0) consistent with that assumption?
+
+```{r functions}
+# Helper functions which we need in order to do the simulation later. Don't
+# really need a function to roll one die.
+
+roll_one_die <- function(){
+  sample(1:6, size = 1)
+}
+
+# Would have been easier to write this by just calling sample() twice (although
+# be wary of the replace argument) but Preceptor made us do it this way.
+
+roll_two_dice <- function(){
+  roll_one_die() + roll_one_die()
+}
+```
+
+## Model Checking
+
+Does the code for rolling dice work? One way to check is to see if a simulation matches what we "know" to be the truth.
+
+```{r check_results, cache=TRUE}
+# Run the roll_two_dice() function a lot of times. Then, create a graphic of the
+# results. If this matches our intuition, that is evidence that our functions
+# are behaving correctly. I need to put the results in a tibble, since that is
+# what ggplot wants.
+
+
+x <- tibble(results = map_int(1:100000, ~ roll_two_dice()))
+
+# Once I have a tibble, the standard ggplot works. Would be nice to have the
+# x-axis labels corresponding to the actual roll values, like 2, 3 and so on.
+# Need tyo figure out a way to get the stats_bin warning (or is it a message?)
+# to disappear. If I just turn it off in the code chunk, I will be penalized.
+
+x %>% 
+  ggplot(aes(results)) +
+    geom_histogram(bins = 30) +
+    labs(title = "Simulated Results from 100,000 Paired Dice Rolls",
+         subtitle = "Distribution matches our expectation",
+         x = "Sum of Two Rolled Dice",
+         y = "Count")  +
+    scale_x_continuous(breaks = 2:12)
+
+```
+
+
+```{r simulation}
+# Assume that John Mark is honest. Yeah! How surprising is it to roll 6 winners?
+# How unusual is it to win against Ishan 4 to 0?
+
+
+```
+
